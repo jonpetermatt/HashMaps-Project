@@ -96,6 +96,7 @@ public class DoubleHashMap<K extends Comparable<K>, V> {
 		}
 		else {
 			putFailures++;
+			maxCollisionsThisPut = 0;
 			throw new RuntimeException("Double Hashing failed to find a free position");
 		}	
 	}

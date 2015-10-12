@@ -15,7 +15,7 @@ public class HashMap<K extends Comparable<K>, V> {
 	private int maxCollisionsThisPut = 0;
 	
 	// construct a HashMap with 4000 places and given hash parameters
-	public  HashMap(int multiplier, int modulus) {		
+	public HashMap(int multiplier, int modulus) {		
 		hashMapSize = 4000;
 		this.modulus = modulus;
 		this.multiplier = multiplier;
@@ -23,11 +23,11 @@ public class HashMap<K extends Comparable<K>, V> {
 	}
 	
 	// construct a HashMap with given capacity and given hash parameters
-	public  HashMap(int hashMapSize, int multiplier, int modulus) {
+	public HashMap(int hashMapSize, int multiplier, int modulus) {
 		this.hashMapSize = hashMapSize;
 		this.modulus = modulus;
 		this.multiplier = multiplier;
-		items = (HashMapNode<K, V>[]) new HashMapNode[hashMapSize];
+		items = new HashMapNode[hashMapSize];
 	}
 	
 	// hashing
