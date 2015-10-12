@@ -80,7 +80,7 @@ public class ChainingHashMap<K extends Comparable<K>, V> {
 		return keyList;
 	}
 	
-	public V put(K key, V value) throws Exception {
+	public V put(K key, V value) {
 		int index = hash(key)%hashMapSize;
 		HashMapNode<K, V> newNode = new HashMapNode(key, value);
 		ChainingHashMapNode newChain = new ChainingHashMapNode<>(newNode);
