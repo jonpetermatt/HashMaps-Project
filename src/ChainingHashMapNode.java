@@ -9,6 +9,11 @@ public class ChainingHashMapNode<K extends Comparable<K>, V> {
 		this.nextlink = null;
 	}
 	
+	public ChainingHashMapNode(K key, V value) {
+		node = new HashMapNode(key, value);
+		this.nextlink = null;
+	}
+
 	public HashMapNode<K, V> getNode() {
 		return node;
 	}
@@ -22,5 +27,12 @@ public class ChainingHashMapNode<K extends Comparable<K>, V> {
 	
 	public void setNext(ChainingHashMapNode nextLink) {
 		this.nextlink = nextLink;
+	}
+	
+	public V getValue() {
+		return node.getValue();
+	}
+	public K getKey() {
+		return node.getKey();
 	}
 }

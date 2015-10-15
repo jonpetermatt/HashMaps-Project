@@ -41,7 +41,7 @@ public class DoubleHashMap<K extends Comparable<K>, V> {
 		hashKey = Math.abs(multiplier*key.hashCode())%modulus;
 		return hashKey;
 	}
-	
+	//Second Hash
 	public int secondaryHash(K key) {
 		return secondaryModulus - Math.abs(key.hashCode())%secondaryModulus;
 	}
@@ -50,14 +50,15 @@ public class DoubleHashMap<K extends Comparable<K>, V> {
 	public int size() {
 		return totalNodes;
 	}
-	
+	//isEmpty (returns true if empty else false
 	public boolean isEmpty() {
 		if (totalNodes == 0) {
 			return true;
 		}
 		return false;
 	}
-	
+	//returns a list of keys
+	//goes through items from 0 to the hash map size and adds the keys of non null and non DEFUNCT points
 	public List<K> keys() {
 		List<K> keyList = new ArrayList<K>();
 		for (int i = 0; i < hashMapSize; i++) {
@@ -67,12 +68,25 @@ public class DoubleHashMap<K extends Comparable<K>, V> {
 		}
 		return keyList;
 	}
-	
-	public V put(K key, V value) throws Exception {
+	//put's a node in the hashmap 
+	//returns the replaced value if there is one, else it returns null
+	//creates an int index from hash and the key and an int secondaryIndex from secondaryHash
+	//if there are no free spots in the map then throw an exception
+	//loop through items starting from the point index until null, DEFUNCT or a matching key is found
+	//Increments by secondaryIndex
+	//a counter is created that counts how many points were tried on the map
+	//if the counter reaches the size of the map than throw an exception
+	//if null, DEFUNCT or the key is found than replace it with the new node
+	public V put(K key, V value) {
 		int index = hash(key)%hashMapSize;
 		int secondaryIndex = secondaryHash(key)%hashMapSize;
 		int tryCounter = 0;
 		while (items[index] != null && items[index] != DEFUNCT && tryCounter != hashMapSize) {
+			if (items[index].getKey() == key) {
+				V returnedValue = items[index].getValue();
+				items[index].setValue(value);
+				return returnedValue;
+			}
 			index = index + secondaryIndex;
 			tryCounter++;
 			if (index >= hashMapSize) {
@@ -80,6 +94,12 @@ public class DoubleHashMap<K extends Comparable<K>, V> {
 			}
 			totalCollisions++;
 			maxCollisionsThisPut = maxCollisionsThisPut + secondaryIndex; 
+		}
+		
+		if (items[index].getKey() == key) {
+			V returnedValue = items[index].getValue();
+			items[index].setValue(value);
+			return returnedValue;
 		}
 		if (items[index] == null || items[index] == DEFUNCT) {
 			if (index != hash(key)%hashMapSize) {
@@ -97,9 +117,11 @@ public class DoubleHashMap<K extends Comparable<K>, V> {
 		else {
 			putFailures++;
 			maxCollisionsThisPut = 0;
-			throw new RuntimeException("Double Hashing failed to find a free position");
+			return null;
 		}	
 	}
+	//returns the value of the matching key if the key is found else return null
+	//searches through index like in put
 	public V get(K key) {
 		int index = hash(key)%hashMapSize;
 		int secondaryIndex = secondaryHash(key)%hashMapSize;
@@ -118,6 +140,8 @@ public class DoubleHashMap<K extends Comparable<K>, V> {
 		}
 		return null;
 	}
+	//removes a node in index and replaces it with DEFUNCT
+	//searches through index just like put
 	public V remove(K key) {
 		int index = hash(key)%hashMapSize;
 		int secondaryIndex = secondaryHash(key)%hashMapSize;

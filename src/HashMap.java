@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+
+
 import java.util.List;
 
 public class HashMap<K extends Comparable<K>, V> {
@@ -41,14 +43,15 @@ public class HashMap<K extends Comparable<K>, V> {
 	public int size() {
 		return totalNodes;
 	}
-	
+	//isEmpty (returns true if empty else false
 	public boolean isEmpty() {
 		if (totalNodes == 0) {
 			return true;
 		}
 		return false;
 	}
-	
+	//returns a list of keys
+	//goes through items from 0 to the hash map size and adds the keys of non null and non DEFUNCT points
 	public List<K> keys() {
 		List<K> keyList = new ArrayList<K>();
 		for (int i = 0; i < hashMapSize; i++) {
@@ -58,11 +61,27 @@ public class HashMap<K extends Comparable<K>, V> {
 		}
 		return keyList;
 	}
-	
-	public V put(K key, V value) throws Exception {
+	//put's a node in the hashmap 
+	//returns the replaced value if there is one, else it returns null
+	//if there are no free spots in the map then throw an exception
+	//creates an int index from hash and the key value
+	//loop through items starting from the point index until null, DEFUNCT or a matching key is found
+	//Increments one at a time 
+	//or if the index is now one less than the original index
+	//if null, DEFUNCT or the key is found than replace it with the new node
+	//if the index is equal to one less than the index then throw an exception
+	//every time there is no match increase totalCollisions and MaxCollisionsThisPut
+	//if MaxCollisionsThisPut is greater than maxCollisions than set maxCollisions to MaxCollisionsThisPut
+	//if index is not equal to originalIndex than increment putCollisions 
+	public V put(K key, V value) {
 		int index = hash(key)%hashMapSize;
 		int originalIndex = index;
 		while (items[index] != null && items[index] != DEFUNCT && index != originalIndex-1) {
+			if (items[index].getKey() == key) {
+				V returnedValue = items[index].getValue();
+				items[index].setValue(value);
+				return returnedValue;
+			}
 			index++;
 			totalCollisions++;
 			maxCollisionsThisPut++;
@@ -70,10 +89,10 @@ public class HashMap<K extends Comparable<K>, V> {
 				index = 0;
 			}
 		}
+		if (index != originalIndex) {
+			putCollisions++;
+		}
 		if (items[index] == null || items[index] == DEFUNCT) {
-			if (index != hash(key)%hashMapSize) {
-				putCollisions++;
-			}
 			HashMapNode<K, V> newNode = new HashMapNode(key, value);
 			items[index] = newNode;
 			totalNodes++;
@@ -86,12 +105,14 @@ public class HashMap<K extends Comparable<K>, V> {
 		else {
 			maxCollisions = hashMapSize;
 			maxCollisionsThisPut = 0;
-			throw new Exception();
+			return null;
 		}
 		
 		
+		
 	}
-	
+	//returns the value of the matching key if the key is found else return null
+	//searches through index like in put
 	public V get(K key) {
 		int index = hash(key)%hashMapSize;
 		int originalIndex = index;
@@ -109,21 +130,24 @@ public class HashMap<K extends Comparable<K>, V> {
 		}
 		return null;
 	}
-	
+	//removes a node in index and replaces it with DEFUNCT
+	//searches through index just like put
 	public V remove(K key) {
 		int index = hash(key)%hashMapSize;
 		int originalIndex = index;
-		while (items[index].getKey() != key && index != originalIndex-1) {
-			index++;
+		while (index != originalIndex-1) {
+			if (items[index] == null || items[index] == DEFUNCT) {
+				return null;
+			}
+			if (items[index].getKey() == key) {
+				V returningValue = items[index].getValue();
+				items[index] = DEFUNCT;
+				return returningValue;
+			}
 			if (index == hashMapSize-1) {
 				index = 0;
 			}
-		}
-		if (items[index].getKey() == key) {
-			 	V originalValue = items[index].getValue();
-				items[index] = DEFUNCT;
-				totalNodes--;
-				return originalValue;
+			index++;
 		}
 		return null;
 	}
